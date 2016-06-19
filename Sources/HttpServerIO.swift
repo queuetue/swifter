@@ -16,7 +16,12 @@ public class HttpServerIO {
     private var listenSocket: Socket = Socket(socketFileDescriptor: -1)
     private var clientSockets: Set<Socket> = []
     private let clientSocketsLock = NSLock()
-    
+    public var additionalheaders:[String:String]
+
+    init(){
+        self.additionalheaders = [String:String]();
+    }
+
     public func start(listenPort: in_port_t = 8080, forceIPv4: Bool = false) throws {
         stop()
         listenSocket = try Socket.tcpSocketForListen(listenPort, forceIPv4: forceIPv4)
@@ -111,7 +116,11 @@ public class HttpServerIO {
         for (name, value) in response.headers() {
             try socket.writeUTF8("\(name): \(value)\r\n")
         }
-        
+
+        for (name, value) in self.additionalheaders {
+            try socket.writeUTF8("\(name): \(value)\r\n")
+        }
+
         try socket.writeUTF8("\r\n")
     
         if let writeClosure = content.write {

@@ -16,6 +16,7 @@ extension HttpHandlers {
             }
 
             guard let file = try? File.openForReading(absolutePath) else {
+                logw("File can't be opened: \(absolutePath)")
                 return .NotFound
             }
             return .RAW(200, "OK", [:], { writer in
@@ -48,6 +49,8 @@ extension HttpHandlers {
             let indexPath = "\(folderPath)/\(indexFile)"
             if fm.fileExistsAtPath(indexPath) {
                 return indexPath
+            } else {
+                logw("File not found: \(indexPath)")
             }
         }
         

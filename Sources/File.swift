@@ -9,6 +9,7 @@
     import Glibc
 #else
     import Foundation
+    import Darwin
 #endif
 
 public enum FileError: ErrorType {
@@ -37,7 +38,14 @@ public class File {
         logw("opening: \(path) - \(mode)")
         let cPath = path.withCString({ cs in return cs })
         let cMode = mode.withCString({ cs in return cs })
+
+        let zfile = Darwin.open(cPath, O_RDONLY)
+        if zfile == -1 {
+            logw("ERROR")
+            throw FileError.OpenFailed(descriptionOfLastError())
+        }
         let file = fopen(cPath, cMode)
+
         guard file != nil else {
             logw("ERROR")
             throw FileError.OpenFailed(descriptionOfLastError())

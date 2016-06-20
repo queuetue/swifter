@@ -34,10 +34,12 @@ public class File {
     }
     
     public static func openFileForMode(path: String, _ mode: String) throws -> File {
+        logw("opening: \(path) - \(mode)")
         let cPath = path.withCString({ cs in return cs })
         let cMode = mode.withCString({ cs in return cs })
         let file = fopen(cPath, cMode)
         guard file != nil else {
+            logw("ERROR")
             throw FileError.OpenFailed(descriptionOfLastError())
         }
         return File(file)

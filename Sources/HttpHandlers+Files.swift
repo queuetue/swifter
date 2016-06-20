@@ -16,11 +16,14 @@ extension HttpHandlers {
             }
 
             guard let file = try? File.openForReading(absolutePath) else {
+                print("File can't be opened: \(absolutePath)")
                 logw("File can't be opened: \(absolutePath)")
                 return .NotFound
             }
             return .RAW(200, "OK", [:], { writer in
                 var buffer = [UInt8](count: 64, repeatedValue: 0)
+                print("File opened: \(absolutePath)")
+                logw("File opened: \(absolutePath)")
                 while let count = try? file.read(&buffer) where count > 0 {
                     writer.write(buffer[0 ..< count])
                 }
@@ -50,6 +53,7 @@ extension HttpHandlers {
             if fm.fileExistsAtPath(indexPath) {
                 return indexPath
             } else {
+                print("File not found: \(indexPath)")
                 logw("File not found: \(indexPath)")
             }
         }

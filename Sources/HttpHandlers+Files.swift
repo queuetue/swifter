@@ -15,20 +15,46 @@ extension HttpHandlers {
                 return .NotFound
             }
 
-            guard let file = try? File.openForReading(absolutePath) else {
-                print("File can't be opened: \(absolutePath)")
-                logw("File can't be opened: \(absolutePath)")
-                return .NotFound
+            do {
+                let file = try File.openForReading(absolutePath)
+                return .RAW(200, "OK", [:], { writer in
+                    var buffer = [UInt8](count: 64, repeatedValue: 0)
+                    logw("File opened: \(absolutePath)")
+                    while let count = try? file.read(&buffer) where count > 0 {
+                        writer.write(buffer[0 ..< count])
+                    }
+                    file.close()
+                })
+            } catch FileError.OpenFailed(let errorString){
+                logw("File can't be opened: \(absolutePath) - \(errorString)")
+            } catch FileError.ReadFailed(let errorString){
+                logw("File can't be read: \(absolutePath) - \(errorString)")
+            } catch FileError.SeekFailed(let errorString){
+                logw("File wont allow seek: \(absolutePath) - \(errorString)")
+            } catch FileError.GetCurrentWorkingDirectoryFailed(let errorString){
+                logw("CWD failed: \(absolutePath) - \(errorString)")
+            } catch {
+                logw("File failed: \(absolutePath) - Unspecificed cause")
             }
-            return .RAW(200, "OK", [:], { writer in
-                var buffer = [UInt8](count: 64, repeatedValue: 0)
-                print("File opened: \(absolutePath)")
-                logw("File opened: \(absolutePath)")
-                while let count = try? file.read(&buffer) where count > 0 {
-                    writer.write(buffer[0 ..< count])
-                }
-                file.close()
-            })
+
+            return .NotFound
+
+//            guard let file = try? File.openForReading(absolutePath) else {
+//                print("File can't be opened: \(absolutePath)")
+//                logw("File can't be opened: \(absolutePath)")
+//                return .NotFound
+//            }
+
+
+//            return .RAW(200, "OK", [:], { writer in
+//                var buffer = [UInt8](count: 64, repeatedValue: 0)
+//                print("File opened: \(absolutePath)")
+//                logw("File opened: \(absolutePath)")
+//                while let count = try? file.read(&buffer) where count > 0 {
+//                    writer.write(buffer[0 ..< count])
+//                }
+//                file.close()
+//            })
         }
     }
 
@@ -53,7 +79,6 @@ extension HttpHandlers {
             if fm.fileExistsAtPath(indexPath) {
                 return indexPath
             } else {
-                print("File not found: \(indexPath)")
                 logw("File not found: \(indexPath)")
             }
         }

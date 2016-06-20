@@ -26,7 +26,7 @@ public class File {
     }
     
     public static func openForReading(path: String) throws -> File {
-        return try openFileForMode(path, "rb")
+        return try openFileForMode(path, "r")
     }
     
     public static func openForWritingAndReading(path: String) throws -> File {

@@ -39,12 +39,18 @@ public class File {
         let cPath = path.withCString({ cs in return cs })
         let cMode = mode.withCString({ cs in return cs })
 
-        let zfile = Darwin.open(cPath, O_RDONLY)
-        if zfile == -1 {
-            logw("ERROR")
-            throw FileError.OpenFailed(descriptionOfLastError())
-        }
+//        let zfile = Darwin.open(cPath, O_RDONLY)
+//        if zfile == -1 {
+//            logw("ERROR")
+//            throw FileError.OpenFailed(descriptionOfLastError())
+//        }
+
         let file = fopen(cPath, cMode)
+        for _ in 1...5 {
+            if file != nil {
+                break;
+            }
+        }
 
         guard file != nil else {
             logw("ERROR")

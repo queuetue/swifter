@@ -45,11 +45,12 @@ public class File {
 //            throw FileError.OpenFailed(descriptionOfLastError())
 //        }
 
-        let file = fopen(cPath, cMode)
+        var file = fopen(cPath, cMode)
         for _ in 1...5 {
             if file != nil {
                 break;
             }
+            file = fopen(cPath, cMode)
         }
 
         guard file != nil else {

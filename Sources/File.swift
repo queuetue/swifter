@@ -27,7 +27,7 @@ public class File {
     }
     
     public static func openForReading(path: String) throws -> File {
-        return try openFileForMode(path, "r")
+        return try openFileForMode(path, "rb")
     }
     
     public static func openForWritingAndReading(path: String) throws -> File {
@@ -36,8 +36,8 @@ public class File {
     
     public static func openFileForMode(path: String, _ mode: String) throws -> File {
         logw("opening: \(path) - \(mode)")
-        let cPath = path.withCString({ cs in return cs })
-        let cMode = mode.withCString({ cs in return cs })
+//        let cPath = path.withCString({ cs in return cs })
+//        let cMode = mode.withCString({ cs in return cs })
 
 //        let zfile = Darwin.open(cPath, O_RDONLY)
 //        if zfile == -1 {
@@ -45,13 +45,13 @@ public class File {
 //            throw FileError.OpenFailed(descriptionOfLastError())
 //        }
 
-        var file = fopen(cPath, cMode)
-        for _ in 1...5 {
-            if file != nil {
-                break;
-            }
-            file = fopen(cPath, cMode)
-        }
+        var file = fopen(path, mode)
+//        for _ in 1...5 {
+//            if file != nil {
+//                break;
+//            }
+//            file = fopen(cPath, cMode)
+//        }
 
         guard file != nil else {
             logw("ERROR")

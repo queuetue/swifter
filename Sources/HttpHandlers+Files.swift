@@ -26,7 +26,7 @@ extension HttpHandlers {
                     file.close()
                 })
             } catch FileError.OpenFailed(let errorString){
-                logw("File can't be opened: \(absolutePath) - \(errorString)")
+                logw("File can't be opened: '\(absolutePath)' - \(errorString)")
             } catch FileError.ReadFailed(let errorString){
                 logw("File can't be read: \(absolutePath) - \(errorString)")
             } catch FileError.SeekFailed(let errorString){
